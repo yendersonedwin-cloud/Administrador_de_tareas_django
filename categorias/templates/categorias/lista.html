@@ -149,3 +149,84 @@
     </div>
 </body>
 </html>
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<style>
+    /* Estilos Pro para encajar en el Dashboard */
+    .category-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px 0;
+    }
+    .category-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+        border-left: 8px solid; /* El color vendrá dinámicamente de la BD */
+    }
+    .category-card:hover {
+        transform: translateY(-5px);
+    }
+    .cat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .cat-name {
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: #2d3436;
+        margin: 0;
+    }
+    .priority-pill {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+        color: white;
+        text-transform: uppercase;
+    }
+    .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+    .btn-edit { color: #0984e3; text-decoration: none; font-weight: 600; }
+    .btn-delete { color: #d63031; text-decoration: none; font-weight: 600; }
+</style>
+
+<div class="category-container">
+    {% for cat in categorias %}
+    <div class="category-card" style="border-left-color: {{ cat.color }};">
+        <div class="cat-header">
+            <h3 class="cat-name">{{ cat.nombre }}</h3>
+            <span class="priority-pill" style="background-color: 
+                {% if cat.prioridad == 'Alta' %}#d63031{% elif cat.prioridad == 'Media' %}#fdcb6e{% else %}#00b894{% endif %};">
+                {{ cat.get_prioridad_display }}
+            </span>
+        </div>
+        
+        <div class="actions">
+            <a href="{% url 'actualizar_categoria' cat.pk %}" class="btn-edit">
+                <i class="fa-solid fa-pen"></i> Editar
+            </a>
+            <a href="{% url 'eliminar_categoria' cat.pk %}" class="btn-delete">
+                <i class="fa-solid fa-trash"></i> Eliminar
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align: center; width: 100%; padding: 40px;">
+        <p style="color: #636e72;">Aún no tienes categorías. ¡Empieza creando una!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
