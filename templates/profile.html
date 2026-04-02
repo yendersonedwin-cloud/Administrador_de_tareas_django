@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskFlow – Mi Perfil</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body>
+
+  <nav class="topbar">
+    <a href="{% url 'dashboard' %}" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Volver al Dashboard
+    </a>
+  </nav>
+
+  <div class="profile-container">
+    <header class="hero-section">
+      <div class="hero-avatar" id="heroInitial">Y</div>
+      <div class="hero-info">
+        <h2 id="heroName">Yenderson</h2>
+        <p id="heroEmail">yenderson@universidad.edu.co</p>
+      </div>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-value" id="statTotal">12</span>
+        <span class="stat-label">Tareas Totales</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="statDone">8</span>
+        <span class="stat-label">Completadas</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="statRate">66%</span>
+        <span class="stat-label">Productividad</span>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-header">
+        <h3 style="font-weight: 700;">Configuración de la Cuenta</h3>
+      </div>
+      <div class="settings-body">
+        <form onsubmit="showSuccess(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre de Usuario</label>
+              <input type="text" id="fieldUsername" value="yenderson123">
+            </div>
+            <div class="form-group">
+              <label>Correo Electrónico</label>
+              <input type="email" id="fieldEmail" value="yenderson@universidad.edu.co">
+            </div>
+          </div>
+          <div class="actions-bar">
+            <button type="button" class="btn btn-danger" onclick="confirmLogout()">Cerrar Sesión</button>
+            <button type="submit" class="btn btn-save">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="successMsg">¡Cambios guardados con éxito!</div>
+
+  <script src="{% static 'Tareas/js/profile.js' %}"></script>
+</body>
+</html>
