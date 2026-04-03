@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-box">✓</div>
+            <div>
+                <h2 class="brand-name">TaskFlow</h2>
+                <p class="brand-tagline">Productivity Hub</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="nav-link active">
+                <span class="nav-icon">☀️</span> My Day
+            </a>
+            <div class="nav-link"><span class="nav-icon">📅</span> Upcoming</div>
+            <div class="nav-link"><span class="nav-icon">✅</span> Completed</div>
+
+            <div class="category-header">
+                <span>CATEGORIES</span>
+                <button type="button" onclick="openCatModal()" class="add-cat-btn">+</button>
+            </div>
+
+            <div class="category-list">
+                {% for cat in categorias %}
+                <div class="nav-link">
+                    <span class="cat-dot" style="background-color: {{ cat.color }};"></span>
+                    {{ cat.nombre }}
+                </div>
+                {% empty %}
+                <p class="empty-text" style="padding-left: 12px; font-size: 12px; color: #64748b;">No hay categorías</p>
+                {% endfor %}
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'profile' %}" class="nav-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                <span class="nav-icon">👤</span> Profile Settings
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="content-header">
+            <h1>My Day</h1>
+            <p class="date-display">Thursday, April 2, 2026</p>
+        </header>
+
+        <form action="{% url 'crear_tarea' %}" method="POST" class="quick-add-form">
+            {% csrf_token %}
+            <span class="plus-sign" style="color: var(--primary);">+</span>
+            <input type="text" name="titulo" placeholder="Add a new task..." required>
+            <button type="submit" class="submit-task-btn">Add</button>
+        </form>
+
+        <div class="tasks-container">
+            {% for tarea in tareas %}
+            <div class="task-card" 
+                 onclick="openDetail(this)" 
+                 data-id="{{ tarea.id }}" 
+                 data-titulo="{{ tarea.titulo|escapejs }}" 
+                 data-desc="{{ tarea.descripcion|default:''|escapejs }}">
+                
+                <div class="circle-check"></div>
+                
+                <div class="task-details">
+                    <div class="task-title-text">{{ tarea.titulo }}</div>
+                    <div class="task-info-row">
+                        <span class="prio-badge">{{ tarea.get_prioridad_display }}</span>
+                        {% if tarea.categoria %}
+                        <span class="cat-badge">
+                            <span class="mini-dot" style="background: {{ tarea.categoria.color }};"></span>
+                            {{ tarea.categoria.nombre }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state" style="text-align: center; margin-top: 50px; color: #64748b;">
+                <p>Tu lista está vacía. ¡Empieza hoy!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <aside id="detailPanel" class="detail-panel hidden">
+        <div class="panel-header">
+            <h3>Task Details</h3>
+            <button onclick="closeDetail()" class="close-panel-btn">✕</button>
+        </div>
+        
+        <form id="editForm" method="POST" class="edit-form-body">
+            {% csrf_token %}
+            <div class="input-field">
+                <label>Title</label>
+                <input type="text" name="titulo" id="detTitle" required>
+            </div>
+            <div class="input-field">
+                <label>Description</label>
+                <textarea name="descripcion" id="detDesc" rows="8" placeholder="Add a description..."></textarea>
+            </div>
+
+            <div class="panel-footer-btns">
+                <button type="button" onclick="submitDelete()" class="btn-danger-outline">Delete Task</button>
+                <button type="submit" class="btn-primary-solid">Save Changes</button>
+            </div>
+        </form>
+    </aside>
+
+    <div id="modalCat" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New Category</h3>
+                <button onclick="closeCatModal()" class="close-panel-btn">✕</button>
+            </div>
+            <form action="{% url 'crear_categoria' %}" method="POST">
+                {% csrf_token %}
+                <div class="input-field">
+                    <label>Name</label>
+                    <input type="text" name="nombre" placeholder="e.g. Work, Gym" required>
+                </div>
+                <div class="input-field">
+                    <label>Color</label>
+                    <input type="color" name="color" value="#10b981" class="color-picker-input">
+                </div>
+                <input type="hidden" name="prioridad" value="M">
+                <button type="submit" class="btn-primary-solid" style="width: 100%;">Create Category</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="customConfirmModal" class="modal-overlay hidden">
+        <div class="modal-content text-center">
+            <h3>¿Eliminar tarea?</h3>
+            <p>Se borrará: <strong id="deleteTaskName"></strong></p>
+            <div class="confirm-btns-row">
+                <button type="button" onclick="closeCustomConfirm()" class="btn-ghost">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn-danger-solid">Yes, Delete</button>
+            </div>
+            <form id="deleteForm" method="POST" style="display:none;">{% csrf_token %}</form>
+        </div>
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>
